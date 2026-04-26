@@ -1,52 +1,22 @@
 import React, { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  Menu,
-  X,
-  MapPin,
-  Train,
-  Plane,
-  Wifi,
-  Car,
-  BedDouble,
-  Bath,
-  Users,
-  CalendarDays,
-  ChevronRight,
-  Star,
-  ShieldCheck,
-  Phone,
-  Mail,
-  Trees,
-  Waves,
-  Castle,
-  Fish,
-  CheckCircle2,
-  Building2,
-  Clock3,
-  CreditCard,
-  Luggage,
-  Ticket,
-  Music4,
-  Sailboat,
-  Gamepad2,
-  Footprints,
-  Search,
-  Filter,
-  ArrowLeft,
-  ArrowRight,
-  Sparkles,
-  XCircle,
-  Info,
-  MoveRight,
+  Menu, X, MapPin, Train, Plane, Wifi, Car, BedDouble, Bath, Users,
+  CalendarDays, ChevronRight, Star, ShieldCheck, Phone, Mail, Trees,
+  Waves, Castle, Fish, CheckCircle2, Building2, Clock3, CreditCard,
+  Luggage, Ticket, Music4, Sailboat, Gamepad2, Footprints, Search,
+  Filter, ArrowLeft, ArrowRight, Sparkles, XCircle, Info, MoveRight,
 } from "lucide-react";
 
 const BRAND = "Livornolife";
+const EASE = [0.22, 1, 0.36, 1];
+const PAGE = { duration: 0.24, ease: "easeOut" };
+const REVEAL = { duration: 0.48, ease: EASE };
+const FLOAT = { duration: 8, repeat: Infinity, ease: "easeInOut" };
+const HOVER = { y: -2, transition: { duration: 0.22, ease: "easeOut" } };
 
 const property = {
   title: "Appartamento con terrazza a Livorno",
-  subtitle:
-    "Una base luminosa, spaziosa e curata per soggiorni brevi vicino al centro e al mare.",
-  location: "Livorno, Toscana",
   address: "Via Luigi Cherubini, 9 • 57124 Livorno",
   rating: "9.1",
   reviews: "84+ recensioni",
@@ -61,10 +31,8 @@ const property = {
   basePrice: 115,
   cleaningFee: 35,
   cityTax: 1.5,
-  description:
-    "Una soluzione spaziosa e accogliente per chi desidera un soggiorno comodo a Livorno, con ambienti ordinati, contatto diretto e una posizione pratica per muoversi tra città, porto e costa.",
   longDescription:
-    "L’appartamento offre circa 100 m² con due camere, zona living e terrazza. Gli spazi sono pensati per coppie, famiglie o piccoli gruppi che cercano una base ampia e funzionale per visitare Livorno e i dintorni. L’atmosfera è chiara, rilassata e adatta sia a soggiorni brevi sia a permanenze di qualche giorno in più.",
+    "L’appartamento offre circa 100 m² con due camere, zona living e terrazza. Gli spazi sono pensati per coppie, famiglie o piccoli gruppi che cercano una base ampia e funzionale per visitare Livorno e i dintorni.",
   highlights: [
     "Terrazza con vista aperta",
     "Wi‑Fi gratuito",
@@ -100,64 +68,26 @@ const property = {
 };
 
 const nearby = [
-  {
-    title: "Livorno Centrale",
-    text: "Comoda per chi arriva in treno e utile per spostarsi rapidamente verso Pisa e altre destinazioni.",
-    meta: "Circa 9 minuti a piedi",
-    icon: Train,
-  },
-  {
-    title: "Aeroporto di Pisa",
-    text: "Una soluzione pratica anche per chi arriva in aereo e vuole raggiungere facilmente Livorno.",
-    meta: "Circa 25 km",
-    icon: Plane,
-  },
-  {
-    title: "Porto di Livorno",
-    text: "Un punto strategico per imbarchi, traghetti e collegamenti marittimi.",
-    meta: "Circa 3,5 km",
-    icon: Building2,
-  },
-  {
-    title: "Venezia Nuova",
-    text: "Uno dei quartieri più affascinanti della città, tra canali, ponti e scorci storici.",
-    meta: "Circa 2,3 km",
-    icon: MapPin,
-  },
+  { title: "Livorno Centrale", text: "Comoda per chi arriva in treno.", meta: "Circa 9 minuti a piedi", icon: Train },
+  { title: "Aeroporto di Pisa", text: "Pratico per chi arriva in aereo.", meta: "Circa 25 km", icon: Plane },
+  { title: "Porto di Livorno", text: "Punto strategico per imbarchi e traghetti.", meta: "Circa 3,5 km", icon: Building2 },
+  { title: "Venezia Nuova", text: "Uno dei quartieri più affascinanti della città.", meta: "Circa 2,3 km", icon: MapPin },
 ];
 
 const thingsToDo = [
-  {
-    title: "Terrazza Mascagni",
-    text: "L’icona del lungomare livornese, perfetta per una passeggiata sul mare tra panorama e architettura.",
-    icon: Waves,
-  },
-  {
-    title: "Acquario di Livorno",
-    text: "Una tappa ideale per famiglie e visitatori, situata sul lungomare accanto a Terrazza Mascagni.",
-    icon: Fish,
-  },
-  {
-    title: "Quartiere Venezia Nuova",
-    text: "Canali, ponticelli e atmosfere uniche: uno dei luoghi più caratteristici della città.",
-    icon: Trees,
-  },
-  {
-    title: "Fortezza Vecchia",
-    text: "Un simbolo storico di Livorno e una tappa perfetta per scoprire il volto mediceo della città.",
-    icon: Castle,
-  },
+  { title: "Terrazza Mascagni", text: "Passeggiata sul mare tra panorama e architettura.", icon: Waves },
+  { title: "Acquario di Livorno", text: "Tappa ideale per famiglie e visitatori.", icon: Fish },
+  { title: "Quartiere Venezia Nuova", text: "Canali, ponticelli e atmosfere uniche.", icon: Trees },
+  { title: "Fortezza Vecchia", text: "Una tappa perfetta per scoprire la città.", icon: Castle },
 ];
 
 const currentEvents = [
   { area: "Livorno", title: "Concerto per la Liberazione", date: "24 aprile 2026", place: "Teatro Goldoni", tag: "Musica", icon: Music4 },
   { area: "Livorno", title: "Settimana Velica Internazionale 2026", date: "24 aprile – 3 maggio 2026", place: "Livorno", tag: "Sport e mare", icon: Sailboat },
   { area: "Livorno", title: "Livorno AprileJazz 2026", date: "fino al 30 aprile 2026", place: "Auditorium Cesare Chiti", tag: "Festival", icon: Music4 },
-  { area: "Livorno", title: "Schubertiade alla Goldonetta", date: "22 aprile 2026", place: "Goldonetta", tag: "Classica", icon: Music4 },
   { area: "Livorno", title: "La stanza delle ombre", date: "6 marzo – 24 aprile 2026", place: "Fortezza Nuova", tag: "Mostra", icon: Ticket },
   { area: "Pisa", title: "Strapazzata 2026", date: "25 aprile 2026", place: "Lungarno Simonelli", tag: "Sport", icon: Footprints },
   { area: "Pisa", title: "Gamicon Videogames Festival 2026", date: "25 – 26 aprile 2026", place: "Stazione Leopolda", tag: "Festival", icon: Gamepad2 },
-  { area: "Pisa", title: "Mura di Pisa Night Experience", date: "25 aprile e 2 maggio 2026", place: "Mura di Pisa", tag: "Esperienza", icon: Ticket },
 ];
 
 const navItems = [
@@ -170,24 +100,12 @@ const navItems = [
 ];
 
 const selectableDates = [
-  "2026-04-24",
-  "2026-04-25",
-  "2026-04-26",
-  "2026-04-27",
-  "2026-04-28",
-  "2026-04-29",
-  "2026-04-30",
-  "2026-05-01",
-  "2026-05-02",
-  "2026-05-03",
+  "2026-04-24", "2026-04-25", "2026-04-26", "2026-04-27", "2026-04-28",
+  "2026-04-29", "2026-04-30", "2026-05-01", "2026-05-02", "2026-05-03",
 ];
 
 function formatEuro(value) {
-  return new Intl.NumberFormat("it-IT", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(value);
+  return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
 }
 
 function nightsBetween(checkIn, checkOut) {
@@ -200,11 +118,7 @@ function nightsBetween(checkIn, checkOut) {
 
 function formatDateDisplay(iso) {
   if (!iso) return "Seleziona";
-  return new Date(iso).toLocaleDateString("it-IT", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  return new Date(iso).toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function getDefaultDates() {
@@ -212,113 +126,91 @@ function getDefaultDates() {
 }
 
 function Modal({ open, onClose, title, children, wide = false }) {
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-4">
-      <div className={`relative w-full ${wide ? "max-w-5xl" : "max-w-lg"} rounded-[28px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.24)]`}>
-        <button onClick={onClose} className="absolute right-3 top-3 rounded-full bg-slate-100 p-2 text-slate-700 hover:bg-slate-200">
-          <X size={18} />
-        </button>
-        {title ? <div className="border-b border-slate-200 px-5 py-4 text-lg font-bold text-slate-900">{title}</div> : null}
-        <div className="p-4 md:p-6">{children}</div>
-      </div>
-    </div>
+    <AnimatePresence>
+      {open ? (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={PAGE} className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-4">
+          <motion.div initial={{ opacity: 0, y: 10, scale: 0.99 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.99 }} transition={PAGE} className={`relative w-full ${wide ? "max-w-5xl" : "max-w-lg"} rounded-[28px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.24)]`}>
+            <button onClick={onClose} className="absolute right-3 top-3 rounded-full bg-slate-100 p-2 text-slate-700 hover:bg-slate-200"><X size={18} /></button>
+            {title ? <div className="border-b border-slate-200 px-5 py-4 text-lg font-bold text-slate-900">{title}</div> : null}
+            <div className="p-4 md:p-6">{children}</div>
+          </motion.div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   );
 }
 
 function SectionHeading({ eyebrow, title, text, center = false }) {
   return (
-    <div className={center ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
+    <motion.div initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.22 }} transition={REVEAL} className={center ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
       <p className="text-xs font-semibold uppercase tracking-[0.26em] text-sky-700 sm:text-sm">{eyebrow}</p>
       <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">{title}</h2>
       {text ? <p className="mt-4 text-base leading-relaxed text-slate-600 md:text-lg">{text}</p> : null}
-    </div>
+    </motion.div>
   );
 }
 
-function AnimatedSection({ children, className = "" }) {
-  return <section className={className}>{children}</section>;
+function Card({ children, className = "" }) {
+  return <motion.div whileHover={HOVER} className={`rounded-[28px] border border-slate-200 bg-white/92 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl ${className}`}>{children}</motion.div>;
+}
+
+function FloatingOrb({ className = "", delay = 0, duration = 10, x = 0, y = 12 }) {
+  return <motion.div animate={{ y: [0, -y, 0], x: [0, x, 0] }} transition={{ ...FLOAT, delay, duration }} className={className} />;
 }
 
 function Header({ currentPage, setCurrentPage }) {
   const [open, setOpen] = useState(false);
-
   const goTo = (page) => {
     setCurrentPage(page);
     setOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
   return (
-    <header className="sticky top-0 z-50 border-b border-white/70 bg-white/92 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-white/70 bg-white/86 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/78">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-4">
           <button onClick={() => goTo("home")} className="min-w-0 text-left">
             <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-500 sm:text-[11px]">Soggiorni brevi a Livorno</div>
             <div className="mt-1 text-lg font-bold tracking-tight text-slate-950 sm:text-xl">{BRAND}</div>
           </button>
-
-          <nav className="hidden items-center gap-1 rounded-full border border-slate-200/80 bg-white p-1 shadow-sm md:flex">
+          <nav className="hidden items-center gap-1 rounded-full border border-slate-200/80 bg-white/90 p-1 shadow-sm md:flex">
             {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => goTo(item.id)}
-                className={`rounded-full px-4 py-2 text-sm font-medium ${currentPage === item.id ? "bg-slate-950 text-white" : "text-slate-700 hover:bg-slate-100"}`}
-              >
+              <button key={item.id} onClick={() => goTo(item.id)} className={`rounded-full px-4 py-2 text-sm font-medium transition ${currentPage === item.id ? "bg-slate-950 text-white" : "text-slate-700 hover:bg-slate-100"}`}>
                 {item.label}
               </button>
             ))}
           </nav>
-
-          <button onClick={() => goTo("prenota")} className="hidden rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-slate-900 md:inline-flex">
-            Prenota ora
-          </button>
-
-          <button onClick={() => setOpen(!open)} className="rounded-full border border-slate-200 bg-white p-2.5 text-slate-700 shadow-sm hover:bg-slate-50 md:hidden">
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          <button onClick={() => goTo("prenota")} className="hidden rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:bg-slate-900 md:inline-flex">Prenota ora</button>
+          <button onClick={() => setOpen(!open)} className="rounded-full border border-slate-200 bg-white p-2.5 text-slate-700 shadow-sm hover:bg-slate-50 md:hidden">{open ? <X size={20} /> : <Menu size={20} />}</button>
         </div>
       </div>
-
-      {open ? (
-        <div className="border-t border-slate-200 bg-white/95 md:hidden">
-          <div className="mx-auto max-w-7xl px-4 py-4">
-            <div className="flex flex-col gap-2">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => goTo(item.id)}
-                  className={`rounded-2xl px-4 py-3 text-left text-sm font-medium ${currentPage === item.id ? "bg-slate-950 text-white" : "bg-slate-50 text-slate-700"}`}
-                >
-                  {item.label}
-                </button>
-              ))}
+      <AnimatePresence>
+        {open ? (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={PAGE} className="border-t border-slate-200 bg-white/95 md:hidden">
+            <div className="mx-auto max-w-7xl px-4 py-4">
+              <div className="flex flex-col gap-2">
+                {navItems.map((item) => (
+                  <button key={item.id} onClick={() => goTo(item.id)} className={`rounded-2xl px-4 py-3 text-left text-sm font-medium ${currentPage === item.id ? "bg-slate-950 text-white" : "bg-slate-50 text-slate-700"}`}>{item.label}</button>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
-      ) : null}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </header>
   );
 }
 
 function DatePickerModal({ open, onClose, title, currentValue, minDate, onSelect }) {
   const dates = selectableDates.filter((date) => !minDate || new Date(date) > new Date(minDate));
-
   return (
     <Modal open={open} onClose={onClose} title={title}>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {dates.map((date) => {
           const active = currentValue === date;
           return (
-            <button
-              key={date}
-              onClick={() => {
-                onSelect(date);
-                onClose();
-              }}
-              className={`rounded-2xl border px-4 py-4 text-left ${active ? "border-slate-950 bg-slate-950 text-white" : "border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100"}`}
-            >
+            <button key={date} onClick={() => { onSelect(date); onClose(); }} className={`rounded-2xl border px-4 py-4 text-left transition ${active ? "border-slate-950 bg-slate-950 text-white" : "border-slate-200 bg-slate-50 text-slate-800 hover:bg-slate-100"}`}>
               <div className="text-xs uppercase tracking-[0.16em] opacity-70">Data</div>
               <div className="mt-2 text-base font-semibold">{formatDateDisplay(date)}</div>
             </button>
@@ -331,72 +223,46 @@ function DatePickerModal({ open, onClose, title, currentValue, minDate, onSelect
 
 function SearchBarVisual({ setCurrentPage }) {
   const defaults = getDefaultDates();
-
   return (
-    <div className="mt-8 rounded-[28px] border border-white/80 bg-white/92 p-3 shadow-[0_28px_70px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
+    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18, ...REVEAL }} className="mt-8 rounded-[28px] border border-white/80 bg-white/92 p-3 shadow-[0_28px_70px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
       <div className="grid gap-3 md:grid-cols-[1fr_1fr_0.8fr_auto]">
-        {[
-          ["Check-in", formatDateDisplay(defaults.checkIn)],
-          ["Check-out", formatDateDisplay(defaults.checkOut)],
-          ["Ospiti", "2 adulti"],
-        ].map(([label, value]) => (
-          <button
-            key={label}
-            onClick={() => setCurrentPage("prenota")}
-            className="min-w-0 rounded-[22px] border border-slate-200/80 bg-white px-4 py-4 text-left hover:border-slate-300 hover:shadow-sm"
-          >
+        {[["Check-in", formatDateDisplay(defaults.checkIn)], ["Check-out", formatDateDisplay(defaults.checkOut)], ["Ospiti", "2 adulti"]].map(([label, value]) => (
+          <button key={label} onClick={() => setCurrentPage("prenota")} className="min-w-0 rounded-[22px] border border-slate-200/80 bg-white px-4 py-4 text-left transition hover:border-slate-300 hover:shadow-sm">
             <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">{label}</div>
             <div className="mt-2 truncate text-base font-semibold text-slate-900">{value}</div>
           </button>
         ))}
-        <button onClick={() => setCurrentPage("prenota")} className="rounded-[22px] bg-slate-950 px-6 py-4 text-base font-semibold text-white shadow-xl hover:bg-slate-900">
-          Cerca disponibilità
-        </button>
+        <button onClick={() => setCurrentPage("prenota")} className="rounded-[22px] bg-slate-950 px-6 py-4 text-base font-semibold text-white shadow-xl transition hover:bg-slate-900">Cerca disponibilità</button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function HeroVisual() {
   return (
-    <div className="relative">
-      <div className="absolute -right-2 top-4 z-20 hidden rounded-[24px] border border-white/90 bg-white px-4 py-3 shadow-xl sm:block">
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, ...REVEAL }} className="relative">
+      <motion.div animate={{ y: [0, -7, 0] }} transition={{ ...FLOAT, duration: 8.5 }} className="absolute -right-2 top-4 z-20 hidden rounded-[24px] border border-white/90 bg-white px-4 py-3 shadow-xl sm:block">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Valutazione</div>
-        <div className="mt-2 flex items-center gap-2 text-2xl font-bold text-slate-950">
-          {property.rating}
-          <Star size={18} className="fill-sky-500 text-sky-500" />
-        </div>
+        <div className="mt-2 flex items-center gap-2 text-2xl font-bold text-slate-950">{property.rating}<Star size={18} className="fill-sky-500 text-sky-500" /></div>
         <div className="mt-1 text-sm font-medium text-slate-500">{property.reviews}</div>
-      </div>
-
-      <div className="absolute -left-2 bottom-6 z-20 hidden rounded-[24px] border border-white/90 bg-white px-4 py-3 shadow-xl sm:block">
+      </motion.div>
+      <motion.div animate={{ y: [0, 9, 0] }} transition={{ ...FLOAT, duration: 9.2, delay: 0.2 }} className="absolute -left-2 bottom-6 z-20 hidden rounded-[24px] border border-white/90 bg-white px-4 py-3 shadow-xl sm:block">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Da</div>
         <div className="mt-2 text-2xl font-bold text-slate-950">{formatEuro(property.basePrice)}</div>
         <div className="text-sm font-medium text-slate-500">a notte</div>
-      </div>
-
-      <div className="relative overflow-hidden rounded-[28px] border border-white/80 bg-white p-2 shadow-[0_40px_120px_rgba(15,23,42,0.18)] sm:rounded-[34px]">
+      </motion.div>
+      <motion.div animate={{ y: [0, -4, 0] }} transition={{ ...FLOAT, duration: 10 }} className="relative overflow-hidden rounded-[28px] border border-white/80 bg-white p-2 shadow-[0_40px_120px_rgba(15,23,42,0.18)] sm:rounded-[34px]">
         <img src={property.gallery[0]} alt={property.title} className="h-[330px] w-full rounded-[24px] object-cover sm:h-[480px] md:h-[620px] sm:rounded-[30px]" />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/18 to-transparent sm:from-slate-950/72 sm:via-slate-950/22" />
-
-        <div className="absolute inset-x-4 bottom-4 rounded-[24px] border border-white/20 bg-slate-950/58 p-5 text-white shadow-xl backdrop-blur-md sm:inset-x-6 sm:bottom-6 sm:p-6">
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/76 via-slate-950/22 to-transparent" />
+        <div className="absolute inset-x-4 bottom-4 rounded-[24px] border border-white/20 bg-slate-950/56 p-5 text-white shadow-xl backdrop-blur-md sm:inset-x-6 sm:bottom-6 sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0 max-w-[520px]">
               <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-sky-300">{BRAND}</div>
               <h3 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">{property.title}</h3>
-              <div className="mt-3 flex items-start gap-2 text-sm leading-relaxed text-slate-200">
-                <MapPin size={15} className="mt-0.5 shrink-0 text-sky-300" />
-                <span>{property.address}</span>
-              </div>
+              <div className="mt-3 flex items-start gap-2 text-sm leading-relaxed text-slate-200"><MapPin size={15} className="mt-0.5 shrink-0 text-sky-300" /><span>{property.address}</span></div>
             </div>
-
             <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-3">
-              {[
-                [`${property.guests}`, "ospiti"],
-                [`${property.beds}`, "camere"],
-                [property.size, "superficie"],
-              ].map(([value, label]) => (
+              {[[`${property.guests}`, "ospiti"], [`${property.beds}`, "camere"], [property.size, "superficie"]].map(([value, label]) => (
                 <div key={label} className="rounded-2xl border border-white/12 bg-slate-950/90 px-3 py-3 text-center text-white sm:min-w-[104px] sm:px-4">
                   <div className="text-base font-bold sm:text-lg">{value}</div>
                   <div className="mt-1 text-[11px] uppercase tracking-[0.16em] text-white/72">{label}</div>
@@ -405,60 +271,43 @@ function HeroVisual() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
 function Hero({ setCurrentPage }) {
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(180deg,#fbfdff_0%,#f4f9ff_58%,#f9fcff_100%)]">
-      <div className="pointer-events-none absolute left-[-80px] top-[120px] h-[220px] w-[220px] rounded-full bg-sky-200/35 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-60px] top-[180px] h-[240px] w-[240px] rounded-full bg-cyan-200/30 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[40px] left-[36%] h-[180px] w-[180px] rounded-full bg-slate-200/40 blur-3xl" />
-
+      <FloatingOrb className="pointer-events-none absolute left-[-80px] top-[120px] h-[220px] w-[220px] rounded-full bg-sky-200/35 blur-3xl" delay={0.1} duration={10} x={8} y={16} />
+      <FloatingOrb className="pointer-events-none absolute right-[-60px] top-[180px] h-[240px] w-[240px] rounded-full bg-cyan-200/30 blur-3xl" delay={0.3} duration={12} x={-8} y={12} />
+      <FloatingOrb className="pointer-events-none absolute bottom-[40px] left-[36%] h-[180px] w-[180px] rounded-full bg-slate-200/40 blur-3xl" delay={0.2} duration={11} x={6} y={10} />
       <div className="relative mx-auto max-w-7xl px-4 pb-14 pt-14 sm:px-6 md:pb-20 md:pt-18 lg:px-8 lg:pb-24">
         <div className="grid items-center gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white/88 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur-xl">
-              <ShieldCheck size={16} className="text-sky-600" />
-              Terrazza • Fino a 5 ospiti • Prenotazione diretta
-            </div>
-
-            <h1 className="mt-6 text-4xl font-bold leading-[1.02] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={REVEAL} className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white/88 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur-xl">
+              <ShieldCheck size={16} className="text-sky-600" /> Terrazza • Fino a 5 ospiti • Prenotazione diretta
+            </motion.div>
+            <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04, ...REVEAL }} className="mt-6 text-4xl font-bold leading-[1.02] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
               Appartamento elegante e spazioso per soggiorni brevi a Livorno.
-            </h1>
-
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+            </motion.h1>
+            <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, ...REVEAL }} className="mt-6 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
               Ambienti ampi, luce naturale, terrazza e posizione comoda tra stazione, centro e lungomare. Una soluzione pensata per offrire un soggiorno semplice, curato e affidabile fin dal primo contatto.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <button onClick={() => setCurrentPage("prenota")} className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-950 px-6 py-3.5 font-semibold text-white shadow-xl hover:bg-slate-900">
-                Verifica disponibilità <MoveRight size={18} />
-              </button>
-              <button onClick={() => setCurrentPage("appartamento")} className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white/90 px-6 py-3.5 font-semibold text-slate-800 shadow-sm backdrop-blur-xl hover:border-slate-400 hover:text-slate-950">
-                Scopri la struttura <ChevronRight size={18} />
-              </button>
-            </div>
-
-            <div className="mt-9 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                [property.rating, "Valutazione"],
-                [property.size, "Superficie"],
-                [`${property.guests} ospiti`, "Capienza"],
-                [property.checkIn, "Check-in"],
-              ].map(([value, label]) => (
+            </motion.p>
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, ...REVEAL }} className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button onClick={() => setCurrentPage("prenota")} className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-950 px-6 py-3.5 font-semibold text-white shadow-xl transition hover:bg-slate-900">Verifica disponibilità <MoveRight size={18} /></button>
+              <button onClick={() => setCurrentPage("appartamento")} className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white/90 px-6 py-3.5 font-semibold text-slate-800 shadow-sm backdrop-blur-xl transition hover:border-slate-400 hover:text-slate-950">Scopri la struttura <ChevronRight size={18} /></button>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16, ...REVEAL }} className="mt-9 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
+              {[[property.rating, "Valutazione"], [property.size, "Superficie"], [`${property.guests} ospiti`, "Capienza"], [property.checkIn, "Check-in"]].map(([value, label]) => (
                 <div key={label} className="rounded-[22px] border border-white/80 bg-white/78 p-4 shadow-md backdrop-blur-xl">
                   <div className="truncate text-lg font-bold text-slate-950 sm:text-xl">{value}</div>
                   <div className="mt-1 text-sm text-slate-500">{label}</div>
                 </div>
               ))}
-            </div>
-
+            </motion.div>
             <SearchBarVisual setCurrentPage={setCurrentPage} />
           </div>
-
           <HeroVisual />
         </div>
       </div>
@@ -472,17 +321,16 @@ function BenefitRibbon() {
     { icon: Car, title: "Posizione comoda", text: "Facile da raggiungere e utile per muoversi tra stazione, centro e porto." },
     { icon: CalendarDays, title: "Prenotazione dal sito", text: "Calendario, riepilogo soggiorno e richiesta in un flusso più pulito e premium." },
   ];
-
   return (
     <AnimatedSection className="border-y border-slate-200 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:px-6 md:grid-cols-3 lg:px-8">
-        {items.map((item) => {
+        {items.map((item, index) => {
           const Icon = item.icon;
           return (
-            <div key={item.title} className="rounded-[24px] border border-slate-200 bg-slate-50/90 p-5 shadow-sm">
+            <motion.div key={item.title} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ delay: index * 0.05, ...REVEAL }} whileHover={HOVER} className="rounded-[24px] border border-slate-200 bg-slate-50/90 p-5 shadow-sm">
               <div className="flex items-center gap-2 font-semibold text-slate-950"><Icon size={18} className="text-sky-700" /> {item.title}</div>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.text}</p>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -491,79 +339,45 @@ function BenefitRibbon() {
 }
 
 function HomePage({ setCurrentPage }) {
-  return (
-    <>
-      <Hero setCurrentPage={setCurrentPage} />
-      <BenefitRibbon />
-      <ApartmentPreview setCurrentPage={setCurrentPage} />
-      <BookingPreview setCurrentPage={setCurrentPage} />
-      <LivornoPreview setCurrentPage={setCurrentPage} />
-    </>
-  );
+  return (<><Hero setCurrentPage={setCurrentPage} /><BenefitRibbon /><ApartmentPreview setCurrentPage={setCurrentPage} /><BookingPreview setCurrentPage={setCurrentPage} /><LivornoPreview setCurrentPage={setCurrentPage} /></>);
 }
 
 function ApartmentPreview({ setCurrentPage }) {
   return (
     <AnimatedSection className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-20 lg:px-8">
-      <SectionHeading
-        eyebrow="La struttura"
-        title="Spazio, luce e dettagli più curati per una percezione di livello superiore"
-        text={property.longDescription}
-      />
-
+      <SectionHeading eyebrow="La struttura" title="Spazio, luce e dettagli più curati per una percezione di livello superiore" text={property.longDescription} />
       <div className="mt-10 grid gap-6 md:gap-8 lg:grid-cols-[1fr_0.92fr]">
         <div className="grid gap-4 sm:grid-cols-2">
           {property.gallery.slice(1, 5).map((img, index) => (
-            <div key={img} className={index === 0 ? "sm:col-span-2" : ""}>
-              <img src={img} alt={`${property.title} ${index + 2}`} className="h-full min-h-[190px] w-full rounded-[24px] border border-slate-200 object-cover shadow-sm sm:min-h-[220px]" />
-            </div>
+            <motion.div key={img} whileHover={HOVER} className={index === 0 ? "sm:col-span-2" : ""}><img src={img} alt={`${property.title} ${index + 2}`} className="h-full min-h-[190px] w-full rounded-[24px] border border-slate-200 object-cover shadow-sm sm:min-h-[220px]" /></motion.div>
           ))}
         </div>
-
-        <div className="rounded-[28px] border border-slate-200 bg-white/90 p-5 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl md:p-7">
+        <Card className="p-5 md:p-7">
           <div className="grid grid-cols-2 gap-3 md:gap-4">
             <InfoBox icon={<Users size={18} className="text-sky-700" />} label="Ospiti" value={`${property.guests}`} />
             <InfoBox icon={<BedDouble size={18} className="text-sky-700" />} label="Camere" value={`${property.beds}`} />
             <InfoBox icon={<Bath size={18} className="text-sky-700" />} label="Bagno" value={`${property.baths}`} />
             <InfoBox icon={<Building2 size={18} className="text-sky-700" />} label="Superficie" value={property.size} />
           </div>
-
           <div className="mt-8">
             <h3 className="text-xl font-bold text-slate-950">Punti di forza</h3>
             <div className="mt-4 grid gap-3">
-              {property.highlights.map((item) => (
-                <div key={item} className="flex items-center gap-3 rounded-2xl border border-sky-100 bg-sky-50/80 px-4 py-3 text-sm font-medium text-slate-700">
-                  <CheckCircle2 size={18} className="text-sky-700" /> {item}
-                </div>
-              ))}
+              {property.highlights.map((item) => <div key={item} className="flex items-center gap-3 rounded-2xl border border-sky-100 bg-sky-50/80 px-4 py-3 text-sm font-medium text-slate-700"><CheckCircle2 size={18} className="text-sky-700" /> {item}</div>)}
             </div>
           </div>
-
-          <button onClick={() => setCurrentPage("appartamento")} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-900">
-            Vedi tutti i dettagli <ChevronRight size={16} />
-          </button>
-        </div>
+          <button onClick={() => setCurrentPage("appartamento")} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-5 py-3 font-semibold text-white transition hover:bg-slate-900">Vedi tutti i dettagli <ChevronRight size={16} /></button>
+        </Card>
       </div>
     </AnimatedSection>
   );
 }
 
 function InfoBox({ icon, label, value }) {
-  return (
-    <div className="rounded-[22px] border border-slate-200 bg-slate-50/80 p-4">
-      <div className="flex items-center gap-2 text-sm text-slate-500">{icon}{label}</div>
-      <div className="mt-2 text-xl font-bold text-slate-950">{value}</div>
-    </div>
-  );
+  return <div className="rounded-[22px] border border-slate-200 bg-slate-50/80 p-4"><div className="flex items-center gap-2 text-sm text-slate-500">{icon}{label}</div><div className="mt-2 text-xl font-bold text-slate-950">{value}</div></div>;
 }
 
 function DateDisplayButton({ label, value, onClick }) {
-  return (
-    <button onClick={onClick} className="min-w-0 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4 text-left hover:border-slate-300 hover:bg-white">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">{label}</div>
-      <div className="mt-2 truncate text-base font-semibold text-slate-950">{formatDateDisplay(value)}</div>
-    </button>
-  );
+  return <button onClick={onClick} className="min-w-0 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4 text-left transition hover:border-slate-300 hover:bg-white"><div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">{label}</div><div className="mt-2 truncate text-base font-semibold text-slate-950">{formatDateDisplay(value)}</div></button>;
 }
 
 function BookingWidget({ compact = false, onConfirmed }) {
@@ -608,7 +422,7 @@ function BookingWidget({ compact = false, onConfirmed }) {
 
   return (
     <>
-      <div className={`rounded-[28px] border border-slate-200 bg-white/92 ${compact ? "p-5" : "p-5 md:p-7"} shadow-[0_24px_70px_rgba(15,23,42,0.10)] backdrop-blur-xl`}>
+      <Card className={`${compact ? "p-5" : "p-5 md:p-7"}`}>
         <div className="flex items-start justify-between gap-4">
           <div>
             <h3 className="text-2xl font-bold text-slate-950">Prenota il soggiorno</h3>
@@ -620,12 +434,10 @@ function BookingWidget({ compact = false, onConfirmed }) {
             <div className="text-xs text-slate-500">a notte</div>
           </div>
         </div>
-
         <div className="mt-5 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
           <span className={`rounded-full px-3 py-1.5 ${step === 1 ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-500"}`}>1. date</span>
           <span className={`rounded-full px-3 py-1.5 ${step === 2 ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-500"}`}>2. dati ospite</span>
         </div>
-
         {step === 1 ? (
           <div className="mt-6 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
@@ -633,50 +445,21 @@ function BookingWidget({ compact = false, onConfirmed }) {
               <DateDisplayButton label="Check-out" value={checkOut} onClick={() => setPicker("checkOut")} />
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
-              <label>
-                <span className="mb-2 block text-sm font-medium text-slate-700">Adulti</span>
-                <select value={adults} onChange={(e) => setAdults(Number(e.target.value))} className="w-full rounded-[22px] border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base">
-                  {[1, 2, 3, 4, 5].map((n) => <option key={n}>{n}</option>)}
-                </select>
-              </label>
-              <label>
-                <span className="mb-2 block text-sm font-medium text-slate-700">Bambini</span>
-                <select value={children} onChange={(e) => setChildren(Number(e.target.value))} className="w-full rounded-[22px] border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base">
-                  {[0, 1, 2, 3].map((n) => <option key={n}>{n}</option>)}
-                </select>
-              </label>
-              <label>
-                <span className="mb-2 block text-sm font-medium text-slate-700">Animali</span>
-                <select value={pets} onChange={(e) => setPets(Number(e.target.value))} className="w-full rounded-[22px] border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base">
-                  {[0, 1, 2].map((n) => <option key={n}>{n}</option>)}
-                </select>
-              </label>
+              <label><span className="mb-2 block text-sm font-medium text-slate-700">Adulti</span><select value={adults} onChange={(e) => setAdults(Number(e.target.value))} className="w-full rounded-[22px] border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base">{[1,2,3,4,5].map((n)=><option key={n}>{n}</option>)}</select></label>
+              <label><span className="mb-2 block text-sm font-medium text-slate-700">Bambini</span><select value={children} onChange={(e) => setChildren(Number(e.target.value))} className="w-full rounded-[22px] border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base">{[0,1,2,3].map((n)=><option key={n}>{n}</option>)}</select></label>
+              <label><span className="mb-2 block text-sm font-medium text-slate-700">Animali</span><select value={pets} onChange={(e) => setPets(Number(e.target.value))} className="w-full rounded-[22px] border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base">{[0,1,2].map((n)=><option key={n}>{n}</option>)}</select></label>
             </div>
-            <label className="flex items-center gap-3 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-              <input type="checkbox" checked={airportTransfer} onChange={(e) => setAirportTransfer(e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-sky-600" />
-              Aggiungi transfer aeroportuale
-            </label>
+            <label className="flex items-center gap-3 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700"><input type="checkbox" checked={airportTransfer} onChange={(e) => setAirportTransfer(e.target.checked)} className="h-4 w-4 rounded border-slate-300 text-sky-600" />Aggiungi transfer aeroportuale</label>
           </div>
         ) : (
           <div className="mt-6 grid gap-4">
             <div className="grid gap-3 sm:grid-cols-2">
-              <label>
-                <span className="mb-2 block text-sm font-medium text-slate-700">Nome e cognome</span>
-                <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-[22px] border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base" placeholder="Mario Rossi" />
-              </label>
-              <label>
-                <span className="mb-2 block text-sm font-medium text-slate-700">Email</span>
-                <input value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-[22px] border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base" placeholder="email@esempio.it" />
-              </label>
+              <label><span className="mb-2 block text-sm font-medium text-slate-700">Nome e cognome</span><input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-[22px] border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base" placeholder="Mario Rossi" /></label>
+              <label><span className="mb-2 block text-sm font-medium text-slate-700">Email</span><input value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-[22px] border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-500 sm:text-base" placeholder="email@esempio.it" /></label>
             </div>
-            <div className="rounded-[22px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-              <div className="font-semibold text-slate-950">Riepilogo rapido</div>
-              <div className="mt-2">{nights} notti • {adults} adulti • {children} bambini • {pets} animali</div>
-              <div className="mt-1">{formatDateDisplay(checkIn)} → {formatDateDisplay(checkOut)}</div>
-            </div>
+            <div className="rounded-[22px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600"><div className="font-semibold text-slate-950">Riepilogo rapido</div><div className="mt-2">{nights} notti • {adults} adulti • {children} bambini • {pets} animali</div><div className="mt-1">{formatDateDisplay(checkIn)} → {formatDateDisplay(checkOut)}</div></div>
           </div>
         )}
-
         <div className="mt-6 rounded-[24px] border border-sky-100 bg-sky-50/80 p-5">
           <div className="flex items-center justify-between text-sm text-slate-600"><span>Notti</span><span className="font-semibold text-slate-950">{nights || "—"}</span></div>
           <div className="mt-3 flex items-center justify-between text-sm text-slate-600"><span>Tariffa soggiorno</span><span className="font-semibold text-slate-950">{nights ? formatEuro(roomTotal) : "—"}</span></div>
@@ -685,59 +468,19 @@ function BookingWidget({ compact = false, onConfirmed }) {
           <div className="mt-3 flex items-center justify-between text-sm text-slate-600"><span>Transfer</span><span className="font-semibold text-slate-950">{airportTransfer ? formatEuro(transferTotal) : formatEuro(0)}</span></div>
           <div className="mt-4 flex items-center justify-between border-t border-sky-200 pt-4"><span className="text-base font-semibold text-slate-950">Totale stimato</span><span className="text-2xl font-bold text-slate-950">{nights ? formatEuro(total) : "—"}</span></div>
         </div>
-
         {error ? <div className="mt-4 rounded-[22px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-
         <div className="mt-6 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
           <div className="rounded-[22px] border border-slate-200 bg-white p-4"><div className="flex items-center gap-2 font-medium text-slate-950"><Clock3 size={16} className="text-sky-700" /> {property.checkIn}</div><div className="mt-1">Check-in coordinato con host o self-service</div></div>
           <div className="rounded-[22px] border border-slate-200 bg-white p-4"><div className="flex items-center gap-2 font-medium text-slate-950"><CreditCard size={16} className="text-sky-700" /> Conferma soggiorno</div><div className="mt-1">Demo del flusso finale di prenotazione</div></div>
         </div>
-
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           {step === 2 ? <button type="button" onClick={() => setStep(1)} className="flex-1 rounded-full border border-slate-300 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50">Torna indietro</button> : null}
-          {step === 1 ? (
-            <button type="button" onClick={handleNext} className="flex-1 rounded-full bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-900">Continua</button>
-          ) : (
-            <button type="button" onClick={handleConfirm} className="flex-1 rounded-full bg-sky-600 px-5 py-3 font-semibold text-white hover:bg-sky-500">Conferma prenotazione</button>
-          )}
+          {step === 1 ? <button type="button" onClick={handleNext} className="flex-1 rounded-full bg-slate-950 px-5 py-3 font-semibold text-white transition hover:bg-slate-900">Continua</button> : <button type="button" onClick={handleConfirm} className="flex-1 rounded-full bg-sky-600 px-5 py-3 font-semibold text-white transition hover:bg-sky-500">Conferma prenotazione</button>}
         </div>
-      </div>
-
-      <DatePickerModal
-        open={picker === "checkIn"}
-        onClose={() => setPicker(null)}
-        title="Seleziona il check-in"
-        currentValue={checkIn}
-        onSelect={(date) => {
-          setCheckIn(date);
-          if (new Date(checkOut) <= new Date(date)) {
-            setCheckOut(selectableDates.find((d) => new Date(d) > new Date(date)) || checkOut);
-          }
-        }}
-      />
-
-      <DatePickerModal
-        open={picker === "checkOut"}
-        onClose={() => setPicker(null)}
-        title="Seleziona il check-out"
-        currentValue={checkOut}
-        minDate={checkIn}
-        onSelect={setCheckOut}
-      />
-
-      <Modal open={showSummary} onClose={() => setShowSummary(false)} title="Prenotazione inviata (demo)">
-        <div className="space-y-4">
-          <div className="rounded-[22px] border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">Simulazione completata con successo. Nel sito finale qui si aprirebbe la conferma vera o l’invio al booking engine.</div>
-          <div className="grid gap-3 text-sm text-slate-700">
-            <div><span className="font-semibold">Ospite:</span> {name}</div>
-            <div><span className="font-semibold">Email:</span> {email}</div>
-            <div><span className="font-semibold">Soggiorno:</span> {formatDateDisplay(checkIn)} → {formatDateDisplay(checkOut)}</div>
-            <div><span className="font-semibold">Notti:</span> {nights}</div>
-            <div><span className="font-semibold">Totale stimato:</span> {formatEuro(total)}</div>
-          </div>
-          <button onClick={() => setShowSummary(false)} className="w-full rounded-full bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-900">Chiudi anteprima</button>
-        </div>
-      </Modal>
+      </motion.div>
+      <DatePickerModal open={picker === "checkIn"} onClose={() => setPicker(null)} title="Seleziona il check-in" currentValue={checkIn} onSelect={(date) => { setCheckIn(date); if (new Date(checkOut) <= new Date(date)) setCheckOut(selectableDates.find((d) => new Date(d) > new Date(date)) || checkOut); }} />
+      <DatePickerModal open={picker === "checkOut"} onClose={() => setPicker(null)} title="Seleziona il check-out" currentValue={checkOut} minDate={checkIn} onSelect={setCheckOut} />
+      <Modal open={showSummary} onClose={() => setShowSummary(false)} title="Prenotazione inviata (demo)"><div className="space-y-4"><div className="rounded-[22px] border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">Simulazione completata con successo. Nel sito finale qui si aprirebbe la conferma vera o l’invio al booking engine.</div><div className="grid gap-3 text-sm text-slate-700"><div><span className="font-semibold">Ospite:</span> {name}</div><div><span className="font-semibold">Email:</span> {email}</div><div><span className="font-semibold">Soggiorno:</span> {formatDateDisplay(checkIn)} → {formatDateDisplay(checkOut)}</div><div><span className="font-semibold">Notti:</span> {nights}</div><div><span className="font-semibold">Totale stimato:</span> {formatEuro(total)}</div></div><button onClick={() => setShowSummary(false)} className="w-full rounded-full bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-900">Chiudi anteprima</button></div></Modal>
     </>
   );
 }
@@ -751,13 +494,9 @@ function BookingPreview({ setCurrentPage }) {
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-medium text-slate-700"><Sparkles size={16} className="text-sky-600" /> Booking engine preview</div>
             <h3 className="mt-5 text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">Prenotazione più chiara, più elegante, più vicina a un sito premium.</h3>
             <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-600 md:text-lg">Qui si vedono check-in, check-out, ospiti, extra, riepilogo costi e conferma simulata in una presentazione più pulita, adatta a una demo da mostrare.</p>
-            <button onClick={() => setCurrentPage("prenota")} className="mt-7 inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3.5 font-semibold text-white hover:bg-slate-900">
-              Apri la pagina prenotazione <ChevronRight size={18} />
-            </button>
+            <button onClick={() => setCurrentPage("prenota")} className="mt-7 inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3.5 font-semibold text-white transition hover:bg-slate-900">Apri la pagina prenotazione <ChevronRight size={18} /></button>
           </div>
-          <div className="rounded-[26px] border border-white/85 bg-white/92 p-3 shadow-2xl backdrop-blur-xl md:p-4">
-            <BookingWidget compact />
-          </div>
+          <div className="rounded-[26px] border border-white/85 bg-white/92 p-3 shadow-2xl backdrop-blur-xl md:p-4"><BookingWidget compact /></div>
         </div>
       </div>
     </AnimatedSection>
@@ -766,57 +505,19 @@ function BookingPreview({ setCurrentPage }) {
 
 function AvailabilityCalendar() {
   const days = [
-    { day: 21, status: "busy" },
-    { day: 22, status: "busy" },
-    { day: 23, status: "available" },
-    { day: 24, status: "selected" },
-    { day: 25, status: "selected" },
-    { day: 26, status: "selected" },
-    { day: 27, status: "checkout" },
-    { day: 28, status: "available" },
-    { day: 29, status: "busy" },
-    { day: 30, status: "busy" },
-    { day: 1, status: "available" },
-    { day: 2, status: "available" },
-    { day: 3, status: "busy" },
-    { day: 4, status: "busy" },
+    { day: 21, status: "busy" }, { day: 22, status: "busy" }, { day: 23, status: "available" }, { day: 24, status: "selected" },
+    { day: 25, status: "selected" }, { day: 26, status: "selected" }, { day: 27, status: "checkout" }, { day: 28, status: "available" },
+    { day: 29, status: "busy" }, { day: 30, status: "busy" }, { day: 1, status: "available" }, { day: 2, status: "available" },
+    { day: 3, status: "busy" }, { day: 4, status: "busy" },
   ];
-
-  const getClassName = (status) => {
-    if (status === "busy") return "bg-slate-200 text-slate-500";
-    if (status === "selected") return "bg-sky-600 text-white";
-    if (status === "checkout") return "bg-slate-950 text-white";
-    return "bg-white text-slate-950 border border-slate-200";
-  };
-
+  const getClassName = (status) => status === "busy" ? "bg-slate-200 text-slate-500" : status === "selected" ? "bg-sky-600 text-white" : status === "checkout" ? "bg-slate-950 text-white" : "bg-white text-slate-950 border border-slate-200";
   return (
-    <div className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h3 className="text-xl font-bold text-slate-950">Disponibilità simulata</h3>
-          <p className="mt-2 text-sm text-slate-600">Anteprima visuale del calendario disponibilità del portale.</p>
-        </div>
-        <div className="text-sm font-medium text-sky-700">Aprile / Maggio 2026</div>
-      </div>
-
-      <div className="mt-5 grid grid-cols-7 gap-2 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-        {["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"].map((d) => <div key={d}>{d}</div>)}
-      </div>
-      <div className="mt-3 grid grid-cols-7 gap-2">
-        {days.map((item, index) => (
-          <div key={`${item.day}-${index}`} className={`flex h-11 items-center justify-center rounded-2xl text-sm font-semibold ${getClassName(item.status)}`}>
-            {item.day}
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-5 flex flex-wrap gap-3 text-xs text-slate-600">
-        <div className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full border border-slate-300 bg-white" /> Disponibile</div>
-        <div className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-slate-300" /> Occupato</div>
-        <div className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-sky-600" /> Date selezionate</div>
-        <div className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-slate-950" /> Check-out</div>
-      </div>
-    </div>
+    <motion.div whileHover={{ y: -2 }} transition={SPRING} className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
+      <div className="flex items-center justify-between gap-4"><div><h3 className="text-xl font-bold text-slate-950">Disponibilità simulata</h3><p className="mt-2 text-sm text-slate-600">Anteprima visuale del calendario disponibilità del portale.</p></div><div className="text-sm font-medium text-sky-700">Aprile / Maggio 2026</div></div>
+      <div className="mt-5 grid grid-cols-7 gap-2 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">{["Lun","Mar","Mer","Gio","Ven","Sab","Dom"].map((d)=><div key={d}>{d}</div>)}</div>
+      <div className="mt-3 grid grid-cols-7 gap-2">{days.map((item, index)=><div key={`${item.day}-${index}`} className={`flex h-11 items-center justify-center rounded-2xl text-sm font-semibold ${getClassName(item.status)}`}>{item.day}</div>)}</div>
+      <div className="mt-5 flex flex-wrap gap-3 text-xs text-slate-600"><div className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full border border-slate-300 bg-white" /> Disponibile</div><div className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-slate-300" /> Occupato</div><div className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-sky-600" /> Date selezionate</div><div className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-slate-950" /> Check-out</div></div>
+    </motion.div>
   );
 }
 
@@ -825,58 +526,37 @@ function ApartmentImageShowcase() {
   const [open, setOpen] = useState(false);
   const prev = () => setActive((active - 1 + property.gallery.length) % property.gallery.length);
   const next = () => setActive((active + 1) % property.gallery.length);
-
   return (
     <>
       <div>
-        <img src={property.gallery[active]} alt={`${property.title} ${active + 1}`} onClick={() => setOpen(true)} className="h-[280px] w-full cursor-pointer rounded-[28px] border border-slate-200 object-cover shadow-lg sm:h-[420px] md:h-[520px]" />
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <button onClick={prev} className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"><ArrowLeft size={16} /> Precedente</button>
-          <div className="text-sm text-slate-500">Foto {active + 1} di {property.gallery.length}</div>
-          <button onClick={next} className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Successiva <ArrowRight size={16} /></button>
-        </div>
-        <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-6">
-          {property.gallery.map((img, index) => (
-            <button key={img} onClick={() => setActive(index)} className={`overflow-hidden rounded-[20px] border ${active === index ? "border-sky-600 ring-2 ring-sky-200" : "border-slate-200"}`}>
-              <img src={img} alt={`miniatura ${index + 1}`} className="h-20 w-full object-cover" />
-            </button>
-          ))}
-        </div>
+        <motion.img whileHover={{ scale: 1.01 }} transition={{ duration: 0.45, ease: "easeOut" }} src={property.gallery[active]} alt={`${property.title} ${active + 1}`} onClick={() => setOpen(true)} className="h-[280px] w-full cursor-pointer rounded-[28px] border border-slate-200 object-cover shadow-lg sm:h-[420px] md:h-[520px]" />
+        <div className="mt-4 flex items-center justify-between gap-3"><button onClick={prev} className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"><ArrowLeft size={16} /> Precedente</button><div className="text-sm text-slate-500">Foto {active + 1} di {property.gallery.length}</div><button onClick={next} className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Successiva <ArrowRight size={16} /></button></div>
+        <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-6">{property.gallery.map((img, index) => <button key={img} onClick={() => setActive(index)} className={`overflow-hidden rounded-[20px] border transition ${active === index ? "border-sky-600 ring-2 ring-sky-200" : "border-slate-200"}`}><img src={img} alt={`miniatura ${index + 1}`} className="h-20 w-full object-cover" /></button>)}</div>
       </div>
-
-      <Modal open={open} onClose={() => setOpen(false)} wide title="Galleria struttura">
-        <div className="space-y-4">
-          <img src={property.gallery[active]} alt={`${property.title} ${active + 1}`} className="max-h-[72vh] w-full rounded-[24px] object-cover" />
-          <div className="flex items-center justify-between">
-            <button onClick={prev} className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"><ArrowLeft size={16} /> Precedente</button>
-            <div className="text-sm text-slate-500">Foto {active + 1} di {property.gallery.length}</div>
-            <button onClick={next} className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Successiva <ArrowRight size={16} /></button>
-          </div>
-        </div>
-      </Modal>
+      <Modal open={open} onClose={() => setOpen(false)} wide title="Galleria struttura"><div className="space-y-4"><img src={property.gallery[active]} alt={`${property.title} ${active + 1}`} className="max-h-[72vh] w-full rounded-[24px] object-cover" /><div className="flex items-center justify-between"><button onClick={prev} className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"><ArrowLeft size={16} /> Precedente</button><div className="text-sm text-slate-500">Foto {active + 1} di {property.gallery.length}</div><button onClick={next} className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Successiva <ArrowRight size={16} /></button></div></div></Modal>
     </>
   );
 }
 
 function ApartmentPage() {
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
-      <div className="grid gap-6 md:gap-8 xl:grid-cols-[minmax(0,1.05fr)_420px] xl:items-start">
+    <motion.main initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={PAGE} className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
+      <div className="grid gap-6 md:gap-8 lg:grid-cols-[1.08fr_0.92fr]">
         <div>
           <SectionHeading eyebrow="Scheda struttura" title={property.title} text={property.longDescription} />
           <div className="mt-8"><ApartmentImageShowcase /></div>
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 md:gap-6">
-            <div className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
+            <motion.div whileHover={{ y: -2 }} transition={SPRING} className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
               <h3 className="text-xl font-bold text-slate-950">Servizi inclusi</h3>
               <div className="mt-4 grid gap-3">
                 {property.amenities.map((item) => (
                   <div key={item} className="flex items-center gap-3 text-sm text-slate-700"><CheckCircle2 size={16} className="text-sky-700" /> {item}</div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            <div className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
+            <motion.div whileHover={{ y: -2 }} transition={SPRING} className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
               <h3 className="text-xl font-bold text-slate-950">Informazioni utili</h3>
               <div className="mt-4 space-y-3 text-sm text-slate-700">
                 <div><span className="font-semibold">Check-in:</span> {property.checkIn}</div>
@@ -886,12 +566,12 @@ function ApartmentPage() {
                 <div><span className="font-semibold">Recensioni:</span> {property.reviews}</div>
                 <div><span className="font-semibold">Contatto:</span> diretto con la struttura</div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className="mt-10 grid gap-4 md:gap-6 lg:grid-cols-[1fr_1fr]">
             <AvailabilityCalendar />
-            <div className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
+            <motion.div whileHover={{ y: -2 }} transition={SPRING} className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
               <h3 className="text-xl font-bold text-slate-950">Regole e soggiorno</h3>
               <div className="mt-4 grid gap-3">
                 {property.policies.map((item) => (
@@ -903,7 +583,7 @@ function ApartmentPage() {
                 <div className="mt-2 flex items-center gap-2"><Luggage size={16} className="text-sky-700" /> Deposito bagagli / coordinamento arrivo</div>
                 <div className="mt-2 flex items-center gap-2"><Plane size={16} className="text-sky-700" /> Transfer aeroportuale su richiesta</div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className="mt-10">
@@ -912,33 +592,33 @@ function ApartmentPage() {
               {nearby.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.title} className="rounded-[24px] border border-slate-200 bg-sky-50/70 p-5 shadow-sm">
+                  <motion.div key={item.title} whileHover={{ y: -2 }} transition={SPRING} className="rounded-[24px] border border-slate-200 bg-sky-50/70 p-5 shadow-sm">
                     <div className="flex items-center gap-2 font-semibold text-slate-950"><Icon size={18} className="text-sky-700" /> {item.title}</div>
                     <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.text}</p>
                     <div className="mt-3 text-sm font-medium text-sky-700">{item.meta}</div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
           </div>
         </div>
 
-        <aside className="xl:sticky xl:top-24"><BookingWidget /></aside>
+        <aside className="lg:sticky lg:top-24"><BookingWidget /></aside>
       </div>
-    </main>
+    </motion.main>
   );
 }
 
 function BookingPage() {
   const [lastBooking, setLastBooking] = useState(null);
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
+    <motion.main initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={PAGE} className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
       <SectionHeading eyebrow="Prenotazione" title="Un flusso completo che fa percepire il sito come un prodotto più maturo" text="Qui si vedono ricerca disponibilità, calendario, selezione ospiti, costi, regole e conferma simulata all’interno di una pagina più premium e rifinita." />
 
-      <div className="mt-10 grid gap-6 md:gap-8 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
+      <div className="mt-10 grid gap-6 md:gap-8 xl:grid-cols-[1fr_0.92fr]">
         <div className="space-y-6">
           <AvailabilityCalendar />
-          <div className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
+          <motion.div whileHover={{ y: -2 }} transition={SPRING} className="rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl">
             <h3 className="text-xl font-bold text-slate-950">Come funziona il soggiorno</h3>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {[
@@ -954,18 +634,18 @@ function BookingPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
           {lastBooking ? (
-            <div className="rounded-[28px] border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={PAGE} className="rounded-[28px] border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
               <div className="flex items-center gap-2 font-semibold text-emerald-800"><Sparkles size={18} /> Ultima simulazione completata</div>
               <div className="mt-3 text-sm text-emerald-800">Prenotazione demo inviata da <strong>{lastBooking.name}</strong> per <strong>{lastBooking.nights}</strong> notti, totale stimato <strong>{formatEuro(lastBooking.total)}</strong>.</div>
-            </div>
+            </motion.div>
           ) : null}
         </div>
 
-        <aside className="xl:sticky xl:top-24"><BookingWidget onConfirmed={setLastBooking} /></aside>
+        <BookingWidget onConfirmed={setLastBooking} />
       </div>
-    </main>
+    </motion.main>
   );
 }
 
@@ -976,13 +656,13 @@ function GalleryPage() {
   const next = () => setActive((active + 1) % property.gallery.length);
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
+    <motion.main initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={PAGE} className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
       <SectionHeading eyebrow="Galleria" title="Una selezione fotografica più ampia e immersiva" text="Una bozza pensata per mostrare come il sito finale può valorizzare gli ambienti con una galleria più ricca, ordinata e scenografica." />
       <div className="mt-10 grid gap-4 md:grid-cols-2 md:gap-5 xl:grid-cols-3">
         {property.gallery.map((img, index) => (
-          <button key={img} onClick={() => { setActive(index); setOpen(true); }} className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-            <img src={img} alt={`${property.title} foto ${index + 1}`} className="h-[220px] w-full object-cover md:h-[300px]" />
-          </button>
+          <motion.button key={img} whileHover={{ y: -3 }} transition={SPRING} onClick={() => { setActive(index); setOpen(true); }} className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
+            <img src={img} alt={`${property.title} foto ${index + 1}`} className="h-[220px] w-full object-cover transition duration-500 hover:scale-[1.03] md:h-[300px]" />
+          </motion.button>
         ))}
       </div>
 
@@ -996,7 +676,7 @@ function GalleryPage() {
           </div>
         </div>
       </Modal>
-    </main>
+    </motion.main>
   );
 }
 
@@ -1009,7 +689,7 @@ function LivornoPreview({ setCurrentPage }) {
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-sky-300">Scopri Livorno</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">Cosa fare in città e gli eventi correnti già dentro il sito.</h2>
             <p className="mt-4 leading-relaxed text-slate-200">Qui si possono unire guide utili, itinerari locali ed eventi in corso a Livorno e Pisa, così la permanenza diventa più ricca e il sito acquista più valore percepito.</p>
-            <button onClick={() => setCurrentPage("livorno")} className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold text-slate-950 hover:bg-slate-100">
+            <button onClick={() => setCurrentPage("livorno")} className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold text-slate-950 transition hover:bg-slate-100">
               Vedi eventi e guida città <ChevronRight size={16} />
             </button>
           </div>
@@ -1017,12 +697,12 @@ function LivornoPreview({ setCurrentPage }) {
             {currentEvents.slice(0, 4).map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.title} className="rounded-[24px] border border-white/10 bg-white/10 p-5 backdrop-blur-md">
+                <motion.div key={item.title} whileHover={{ y: -3 }} transition={SPRING} className="rounded-[24px] border border-white/10 bg-white/10 p-5 backdrop-blur-md">
                   <div className="flex items-center gap-2 font-semibold text-white"><Icon size={18} className="text-sky-300" /> {item.title}</div>
                   <div className="mt-3 text-sm text-slate-300">{item.date}</div>
                   <div className="mt-1 text-sm text-slate-300">{item.place}</div>
                   <div className="mt-3 inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-sky-200">{item.area}</div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -1037,7 +717,7 @@ function EventCard({ item }) {
   const Icon = item.icon;
   return (
     <>
-      <button onClick={() => setOpen(true)} className="text-left rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] backdrop-blur-xl">
+      <motion.button whileHover={{ y: -3 }} transition={SPRING} onClick={() => setOpen(true)} className="text-left rounded-[28px] border border-slate-200 bg-white/92 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)] backdrop-blur-xl">
         <div className="flex items-center gap-2 font-semibold text-slate-950"><Icon size={18} className="text-sky-700" /> {item.title}</div>
         <div className="mt-4 flex items-center gap-2 text-sm text-slate-600"><CalendarDays size={16} className="text-sky-700" /> {item.date}</div>
         <div className="mt-2 flex items-center gap-2 text-sm text-slate-600"><MapPin size={16} className="text-sky-700" /> {item.place}</div>
@@ -1045,7 +725,7 @@ function EventCard({ item }) {
           <span className="inline-flex rounded-full border border-sky-100 bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700">{item.area}</span>
           <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{item.tag}</span>
         </div>
-      </button>
+      </motion.button>
 
       <Modal open={open} onClose={() => setOpen(false)} title={item.title}>
         <div className="space-y-4 text-sm text-slate-700">
@@ -1076,17 +756,17 @@ function LivornoPage() {
   });
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
+    <motion.main initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={PAGE} className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
       <SectionHeading eyebrow="Livorno & dintorni" title="Guide locali e calendario eventi in una sezione più ricca e filtrabile" text="Qui si uniscono contenuti evergreen su Livorno con eventi correnti già visibili in homepage o in una pagina dedicata, per dare più utilità e spessore al sito." />
 
       <div className="mt-10 grid gap-4 md:grid-cols-2 md:gap-6">
         {thingsToDo.map((item) => {
           const Icon = item.icon;
           return (
-            <div key={item.title} className="rounded-[28px] border border-slate-200 bg-white/92 p-7 shadow-[0_18px_50px_rgba(15,23,42,0.06)] backdrop-blur-xl">
+            <motion.div key={item.title} whileHover={{ y: -2 }} transition={SPRING} className="rounded-[28px] border border-slate-200 bg-white/92 p-7 shadow-[0_18px_50px_rgba(15,23,42,0.06)] backdrop-blur-xl">
               <div className="flex items-center gap-2 font-semibold text-slate-950"><Icon size={20} className="text-sky-700" /> {item.title}</div>
               <p className="mt-3 leading-relaxed text-slate-600">{item.text}</p>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -1121,7 +801,7 @@ function LivornoPage() {
       </div>
 
       {filteredEvents.length === 0 ? <div className="mt-6 rounded-[28px] border border-slate-200 bg-slate-50 p-8 text-center text-slate-600">Nessun evento trovato con i filtri attuali.</div> : null}
-    </main>
+    </motion.main>
   );
 }
 
@@ -1132,11 +812,11 @@ function ContactPage() {
   const handleSubmit = (e) => { e.preventDefault(); setSent(true); };
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
+    <motion.main initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={PAGE} className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:py-16 lg:px-8">
       <SectionHeading eyebrow="Contatti" title="Richiesta soggiorno e informazioni in una pagina più pulita e credibile" text="Qui si può contattare direttamente la struttura, verificare disponibilità e inviare una richiesta in modo semplice e ordinato." />
 
       <div className="mt-10 grid gap-6 md:gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-[30px] border border-slate-200 bg-[linear-gradient(135deg,#0f172a_0%,#0c4a7d_58%,#0a5fa9_100%)] p-8 text-white shadow-[0_30px_90px_rgba(15,23,42,0.20)]">
+        <motion.div whileHover={{ y: -2 }} transition={SPRING} className="rounded-[30px] border border-slate-200 bg-[linear-gradient(135deg,#0f172a_0%,#0c4a7d_58%,#0a5fa9_100%)] p-8 text-white shadow-[0_30px_90px_rgba(15,23,42,0.20)]">
           <h3 className="text-2xl font-bold">Contatto rapido</h3>
           <p className="mt-4 leading-relaxed text-slate-200">Per informazioni su date, soggiorno e disponibilità qui si può contattare direttamente la struttura in modo semplice e veloce.</p>
           <div className="mt-8 space-y-4 text-slate-100">
@@ -1145,9 +825,9 @@ function ContactPage() {
             <div className="flex items-center gap-3"><MapPin size={18} className="text-sky-300" /> {property.address}</div>
           </div>
           <div className="mt-8 rounded-[22px] border border-white/10 bg-white/10 p-5 text-sm text-slate-200">Una comunicazione diretta e una struttura presentata meglio aumentano fiducia e qualità percepita.</div>
-        </div>
+        </motion.div>
 
-        <div className="rounded-[30px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl md:p-8">
+        <motion.div whileHover={{ y: -2 }} transition={SPRING} className="rounded-[30px] border border-slate-200 bg-white/92 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl md:p-8">
           {sent ? (
             <div className="rounded-[24px] border border-emerald-200 bg-emerald-50 p-6">
               <div className="flex items-center gap-2 font-semibold text-emerald-800"><CheckCircle2 size={18} /> Messaggio inviato (demo)</div>
@@ -1167,12 +847,12 @@ function ContactPage() {
                 <input value={form.partenza} onChange={(e) => update("partenza", e.target.value)} placeholder="Data partenza" className="rounded-[22px] border border-slate-300 px-4 py-3 outline-none focus:border-slate-500" />
               </div>
               <textarea value={form.messaggio} onChange={(e) => update("messaggio", e.target.value)} placeholder="Messaggio" className="min-h-[140px] rounded-[22px] border border-slate-300 px-4 py-3 outline-none focus:border-slate-500" />
-              <button type="submit" className="rounded-full bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-900">Invia richiesta</button>
+              <button type="submit" className="rounded-full bg-slate-950 px-5 py-3 font-semibold text-white transition hover:bg-slate-900">Invia richiesta</button>
             </form>
           )}
-        </div>
+        </motion.div>
       </div>
-    </main>
+    </motion.main>
   );
 }
 
@@ -1200,12 +880,12 @@ function FloatingHelp() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button onClick={() => setOpen(true)} className="fixed bottom-4 right-4 z-40 rounded-full bg-slate-950 p-3 text-white shadow-[0_18px_40px_rgba(15,23,42,0.24)] hover:bg-slate-900 md:bottom-5 md:right-5 md:p-4" aria-label="Apri informazioni demo">
+      <button onClick={() => setOpen(true)} className="fixed bottom-4 right-4 z-40 rounded-full bg-slate-950 p-3 text-white shadow-[0_18px_40px_rgba(15,23,42,0.24)] transition hover:bg-slate-900 md:bottom-5 md:right-5 md:p-4" aria-label="Apri informazioni demo">
         <Info size={20} />
       </button>
       <Modal open={open} onClose={() => setOpen(false)} title="Demo interattiva pronta da mostrare">
         <div className="space-y-4 text-sm text-slate-700">
-          <p>Qui si vede una versione più premium e interattiva del sito: prenotazione, galleria, filtri eventi, modali e form sono pensati per far percepire il progetto come più maturo e competitivo.</p>
+          <p>Qui si vede una versione più premium e interattiva del sito: prenotazione, galleria, filtri eventi, modali, form e animazioni sono pensati per far percepire il progetto come più maturo e competitivo.</p>
           <div className="rounded-[22px] border border-sky-100 bg-sky-50 p-4">Nel sito finale questi elementi verrebbero collegati a WordPress, booking engine reale e gestione eventi dal backend.</div>
           <button onClick={() => setOpen(false)} className="w-full rounded-full bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-900">Chiudi</button>
         </div>
@@ -1216,7 +896,6 @@ function FloatingHelp() {
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState("home");
-
   const page = useMemo(() => {
     if (currentPage === "home") return <HomePage setCurrentPage={setCurrentPage} />;
     if (currentPage === "appartamento") return <ApartmentPage />;
@@ -1226,11 +905,10 @@ export default function App() {
     if (currentPage === "contatti") return <ContactPage />;
     return <HomePage setCurrentPage={setCurrentPage} />;
   }, [currentPage]);
-
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fbfdff_0%,#f6faff_38%,#fcfdff_100%)] text-slate-900">
       <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      {page}
+      <AnimatePresence mode="wait"><motion.div key={currentPage} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={PAGE}>{page}</motion.div></AnimatePresence>
       <Footer setCurrentPage={setCurrentPage} />
       <FloatingHelp />
     </div>
